@@ -25,7 +25,7 @@ func Scan(host, ports string) (*Dump, error) {
         return nil, fmt.Errorf("cannot parse ports for scan from '%s', got %s", ports, err.Error())
     }
 
-    var dump *Dump
+    dump := &Dump{}
     for _, port := range scanPorts {
         conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
         if err != nil {
