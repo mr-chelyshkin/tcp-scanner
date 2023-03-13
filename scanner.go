@@ -9,6 +9,15 @@ type Dump struct {
     items []*item
 }
 
+func (d *Dump) Opened() (ports []int) {
+    for _, item := range d.items{
+        if item.isOpen {
+            ports = append(ports, item.port)
+        }
+    }
+    return
+}
+
 
 type item struct {
     isOpen bool
@@ -29,9 +38,17 @@ func Scan(host, ports string) (*Dump, error) {
     for _, port := range scanPorts {
         conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
         if err != nil {
-            return nil, err
+            dump.items = append(dump.items, &item{
+                isOpen: false,
+                port:   port,
+            })
+            conn.Close()
+            continue
         }
-        dump.items = append(dump.items, &item{port: port})
+        dump.items = append(dump.items, &item{
+            isOpen: true,
+            port:   port,
+        })
         conn.Close()
     }
     return dump, nil

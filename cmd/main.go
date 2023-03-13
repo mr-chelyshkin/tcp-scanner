@@ -13,9 +13,11 @@ func main() {
     host := flag.String("host", "", "a string")
     flag.Parse()
 
-    if _, err := scanner.Scan(*host, *ports); err != nil {
+    sc, err := scanner.Scan(*host, *ports)
+    if err != nil {
         fmt.Println(err)
         os.Exit(1)
     }
-    
+    fmt.Println(sc.Opened())
+    os.Exit(0)
 }
