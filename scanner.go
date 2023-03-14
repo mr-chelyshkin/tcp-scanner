@@ -8,7 +8,7 @@ import(
 )
 
 // Scan ports and return Dump oject with results.
-func Scan(host, ports string) (*Dump, error) {
+func Scan(host, ports string, threads int) (*Dump, error) {
     if !isHost(host) {
         return nil, fmt.Errorf("host '%s' is invalid", host)
     }
@@ -19,15 +19,16 @@ func Scan(host, ports string) (*Dump, error) {
     dumpPorts := make([]*Port, len(scanPorts))
 
     wg := &sync.WaitGroup{}
-    sem := make(chan struct{}, 5)
+    sem := make(chan struct{}, threads)
     for i, port := range scanPorts {
         sem <- struct{}{}
         wg.Add(1)
         i := i
+        
         go func(h string, p uint16) {
             defer func() { 
-                <-sem 
                 wg.Done()
+                <-sem 
             }()
             dumpPorts[i] = NewDial(h, p)
         }(host, port)
@@ -85,8 +86,8 @@ func parseArea(item string) ([]uint16, error) {
         return nil, fmt.Errorf("incorrect port number, '%d' less than %d", start, minPortNumber)
     }
 
-    scanPorts := make([]uint16, end-start+1)
-    for i,j := start,0; i<=end; i,j = i+1, j+1{
+    scanPorts := make([]uint16, end+1-start)
+    for i,j := start, 0; i <= end; i,j = i+1, j+1{
         scanPorts[j] = uint16(i)
     }
     return scanPorts, nil
