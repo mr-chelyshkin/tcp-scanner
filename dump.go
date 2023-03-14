@@ -38,9 +38,8 @@ func (d *Dump) OpenAddrs() (addr []string) {
 // All return all dump.
 func (d *Dump) All() map[string]bool {
     r := make(map[string]bool, len(d.ports))
-
     for _, port := range d.ports{
         r[d.host + ":" + strconv.FormatUint(uint64(port.port), 10)] = port.isOpen
     }
     return r
-}                           
+}
