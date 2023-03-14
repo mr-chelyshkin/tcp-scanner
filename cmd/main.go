@@ -18,6 +18,6 @@ func main() {
         fmt.Println(err)
         os.Exit(1)
     }
-    fmt.Println(sc.Opened())
+    fmt.Println(sc.OpenPorts())
     os.Exit(0)
 }
